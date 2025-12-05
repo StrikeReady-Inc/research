@@ -1,0 +1,27 @@
+d93e1c23d95446071c7347d17e7125155486f3d2b01fb7265a4d2453e409ea18  ./EdgeService.dll
+fb7a64dcd4d8f9f50ae41e725e55bbb30941fa7665b0034ae76da67ef26b0790  ./Potwierdzenie_215082025.pdf
+6326b215c026228266df72c6abf9696aaf7b230bbd37e3607bde04e697b1c977  ./928. w sprawie ogłoszenia jednolitego tekstu rozporządzenia Ministra Rozwoju i Finansów w sprawie szczegółowych.hta
+3f3cf3bd9344f5c1988744557b46fbcbf5ab06ac3a796103a049585440ae998d  ./927. w sprawie orzekania o niezdolności do wykonywania zawodu ratownika medycznego oraz sposobu i trybu postępowania.hta
+24ffa4896accea881c4e03f099a9ba5676b4ec04717c7b241878983e67f42628  ./W202504281099-01.pdf
+2d0c146ad07a895d3e1a142e5f34346b7d114bc7dd06da81e57448a5a16f190e  ./929. w sprawie zaniechania poboru podatku dochodowego od osób fizycznych.hta
+185626d53fa1f76da4aeb584b3805267a23b94acc0e689ebc60cb63365054968  ./Zalacznik.rar
+df8af658f59291404650925712186113f8f484cf66558bf6326c7ca67c8b2e53  ./РЕЗЮМЕ_Костенко.doc
+a370cbffb9f52bba47e90efe9647a4a5fca47a0e11d4c167b3616c47be5d0fbf  ./926. zmieniające rozporządzenie w sprawie określenia grup nauczycieli, wychowawców i innych pracowników.hta
+d4f08915fcae18cbb9fa9f87499b956d75c71c58117fb414a12a48abb4e62efc  ./Zalacznik.tar.gz
+de522304cfdb81be6acf2fc9ec86b8a856ab8253d2af7dc25517c1bceb6a568a  ./925. w sprawie ogłoszenia jednolitego tekstu rozporządzenia Ministra Sprawiedliwości w sprawie ustalenia siedzib.hta
+531dcf04f1ab546d5f8795ecd1bc643c242479f4251b85d63e7a2208826bd168  ./1124. w sprawie szkolenia w zakresie kwalifikowanej pierwszej pomocy.hta
+ef950475cf00c907458d91b8a6f075dd4902e76569435692a1f3ab2e8c7addeb  ./unknown.doc
+dd0c8e12ab4d7fa04ecd19bd9296e503e38c94cea1f648a3e16db95171451ede  ./1126. zmieniające rozporządzenie w sprawie szczegółowych warunków i szczegółowego trybu przyznawania i wypłaty pomocy finansowej w ramach schematów na rzecz dobrostanu zwierząt w ramach.hta
+cbbbf1fbdf5d19620b45dc1aa29df7e02facd40f9e7122df8db308bef6f84385  ./1125. w sprawie informacji sprawozdawczych związanych z wizytą statku w porcie morskim.hta
+7cd01fca6206a7fa0adf5d2944b69a530d02c6793dc17694dcc3a2bffd566cfa  ./files.zip
+f9da608175e93b218c715aa60634fcfff673c28dd1cec9189c02b7b462f2b877  ./GMP_GMP093571.pdf
+708baec5b076190af55bf095a82236c0f87439593c6a46e6ed8f010c8acaaf35  ./929/phase2_decoded.txt
+2d0c146ad07a895d3e1a142e5f34346b7d114bc7dd06da81e57448a5a16f190e  ./929/929. w sprawie zaniechania poboru podatku dochodowego od osób fizycznych.hta
+2d3dd7c738b67b9b12a88f2eb75aeaca519cd2034dba601f5e0de76328274ad7  ./929/decode.php
+1defb09370620959b901f0b8a3fb01bb57b636c8fea99dc6ec7adab1e5602dbe  ./929/phase1_decoded.txt
+a7f58403fb9de0414a7bc17acb90dadd3dac5fa4871816ba0f7d0bbfcff7b5f4  ./929/phase3.txt
+11676ea2327576c049045598bc9990bd037e193f4b24b70df44775623dd547fe  ./929/phase2.txt
+cebd9499fd4a52a1688569d45d7f20a893205e6acc90fee9a20f3edf0d48b9e4  ./929/phase3_decoded.txt
+0df4d043819618b718fcc24d053d50b6d3a938cc5f5bc76474e82d27e950b2c3  ./929/phase1.txt
+a7f0598901c583143b3fddb6135a9078dea6eb83d097f160d9c780f3e3713f07  ./1123. zmieniające rozporządzenie w sprawie rejestracji pojazdów Sił Zbrojnych Rzeczypospolitej Polskiej oraz pojazdów należących do obcych sił zbrojnych przebywających...hta
+6a22c0f7cafd717d4bc7408d7cf045f864939dd11f6d61a1b557e25a65fe4b7e  ./Лист мадопомога.doc
